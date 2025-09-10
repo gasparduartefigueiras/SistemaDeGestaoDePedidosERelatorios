@@ -1,0 +1,44 @@
+@startuml
+'https://plantuml.com/class-diagram
+hide methods
+
+class Client {
+  ClientId id
+  CustomerName name
+  CustomerEmail email (UNIQUE)
+  CreationDate date
+}
+
+class Order {
+  OrderId id
+  CustomerName customerName
+  CustomerEmail customerEmail
+  OrderValue orderValue
+  CreationDate creationDate
+  OrderStatus status
+  ValidationMessage validationMessage
+}
+
+class OrderStatusHistory {
+  OrderStatusHistoryId id
+  OrderId orderId
+  OrderStatus initialStatus
+  OrderStatus finalStatus
+  StatusChangeReason reason
+  ChangedBy changedBy
+  StatusChangedMoment moment
+}
+
+class ErrorLog {
+  LogId id
+  LogLevel level
+  LogMessage message
+  LogErrorMoment date
+  OrderId orderId [opcional]
+}
+
+' Relações (agregados)
+Client "1" -- "*" Order : conhece por email (VO)
+Order "1" -- "1..*" OrderStatusHistory
+Order "1" -- "0..*" ErrorLog
+@enduml

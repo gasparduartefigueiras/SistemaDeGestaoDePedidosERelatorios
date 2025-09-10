@@ -1,0 +1,39 @@
+spring:
+  datasource:
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    url: jdbc:sqlserver://localhost:1433;databaseName=SGPR;encrypt=true;trustServerCertificate=true
+    username: sa
+    password: YourStrong!Passw0rd
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate.dialect: org.hibernate.dialect.SQLServerDialect
+      hibernate.jdbc.time_zone: UTC
+    show-sql: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev-24h0nd8g3ss0j3oq.us.auth0.com/
+
+  mail:
+    host: localhost
+    port: 1025
+    properties:
+      mail.smtp.auth: false
+      mail.smtp.starttls.enable: false
+
+validation:
+  listUrl: http://localhost:8089/validate
+  clientId: my-client-id
+  clientSecret: my-client-secret
+
+email:
+  from: no-reply@sgpr.local
+  to: gaspar.duarte.figueiras@gmail.com
+  enabled: true
+  notify-on-pending: true

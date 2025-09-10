@@ -1,0 +1,15 @@
+{
+  "priority": 1,
+  "request": {
+    "method": "POST",
+    "url": "/validate",
+    "bodyPatterns": [
+      { "matchesJsonPath": "$[?(@.email =~ /.+@example\\.com$/)]" }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": { "approved": true, "message": "Approved (whitelist)." },
+    "headers": { "Content-Type": "application/json" }
+  }
+}

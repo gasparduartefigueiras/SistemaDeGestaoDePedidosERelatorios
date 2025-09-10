@@ -1,0 +1,15 @@
+{
+  "priority": 2,
+  "request": {
+    "method": "POST",
+    "url": "/validate",
+    "bodyPatterns": [
+      { "matchesJsonPath": "$[?(@.email =~ /.*reject.*@.*/i)]" }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": { "approved": false, "message": "Client rejected by WireMock." },
+    "headers": { "Content-Type": "application/json" }
+  }
+}

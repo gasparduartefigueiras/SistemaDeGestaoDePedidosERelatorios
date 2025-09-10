@@ -1,0 +1,16 @@
+{
+  "priority": 0,
+  "request": {
+    "method": "POST",
+    "url": "/validate",
+    "bodyPatterns": [
+      { "matchesJsonPath": "$[?(@.email == 'timeout@test.com')]" }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "fixedDelayMilliseconds": 5000,
+    "jsonBody": { "approved": true, "message": "Should timeout." },
+    "headers": { "Content-Type": "application/json" }
+  }
+}
