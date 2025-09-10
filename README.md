@@ -58,6 +58,9 @@ git clone https://github.com/gasparduartefigueiras/SistemaDeGestaoDePedidosERela
 
 # 4.3. Run SQL Server (Docker)
 
+* 1 - Start SQL Server container
+
+Linux/Mac
 ```bash
 docker rm -f sgpr-sql 2>/dev/null || true
 
@@ -69,20 +72,75 @@ docker run -d --name sgpr-sql \
   mcr.microsoft.com/mssql/server:2022-latest
 ```
 
-# 4.4. Run WireMock (Validation Service)
+Windows (PowerShell)
+```powershell
+docker rm -f sgpr-sql 2>$null
 
+docker run -d --name sgpr-sql `
+  --platform linux/amd64 `
+  -e ACCEPT_EULA=Y `
+  -e MSSQL_SA_PASSWORD='YourStrong!Passw0rd' `
+  -p 1433:1433 `
+  mcr.microsoft.com/mssql/server:2022-latest
+```
+
+
+* 2 - Create SGPR database inside container
+
+Linux/Mac
 ```bash
-docker exec -it sgpr-sql /opt/mssql-tools18/bin/sqlcmd \
+  docker exec -it sgpr-sql /opt/mssql-tools18/bin/sqlcmd \
   -S localhost,1433 -U sa -P 'YourStrong!Passw0rd' -C \
   -Q "IF DB_ID('SGPR') IS NULL CREATE DATABASE SGPR; ALTER AUTHORIZATION ON DATABASE::SGPR TO sa;"
 ```
 
+Windows (PowerShell)
+```powershell
+docker exec -it sgpr-sql /opt/mssql-tools18/bin/sqlcmd `
+  -S localhost,1433 -U sa -P 'YourStrong!Passw0rd' -C `
+  -Q "IF DB_ID('SGPR') IS NULL CREATE DATABASE SGPR; ALTER AUTHORIZATION ON DATABASE::SGPR TO sa;"
+```
+
+# 4.4. Run WireMock (Validation Service)
+
+Linux/Mac
+```bash
+docker rm -f sgpr-wiremock 2>/dev/null || true
+
+docker run -d --name sgpr-wiremock \
+  -p 8089:8080 \
+  -v $(pwd)/wiremock:/home/wiremock \
+  wiremock/wiremock:2.35.0
+```
+
+Windows (PowerShell)
+```powershell
+docker rm -f sgpr-wiremock 2>nul || true
+
+docker run -d --name sgpr-wiremock `
+  -p 8089:8080 `
+  -v %cd%/wiremock:/home/wiremock `
+  wiremock/wiremock:2.35.0
+```
+
 # 4.5. Run Mailpit (Dev Email)
 
+Linux/Mac
 ```bash
 docker rm -f sgpr-mailpit 2>/dev/null || true
+
 docker run -d --name sgpr-mailpit \
   -p 1025:1025 -p 8025:8025 \
+  axllent/mailpit:latest
+```
+
+Windows (PowerShell)
+```powershell
+docker rm -f sgpr-mailpit 2>nul || true
+
+docker run -d --name sgpr-mailpit `
+  -p 1025:1025 `
+  -p 8025:8025 `
   axllent/mailpit:latest
 ```
 
@@ -321,4 +379,21 @@ Below is an example of how error notifications appear in Mailpit:
 
 ## 10. Tests & Quality
 
+Unit tests were implemented using JUnit 5 and Mockito.
+They cover the main parts of the system:
+* Services – business logic, email notifications, and error logging.
+* Mappers / Assemblers – conversion between domain, DTOs, and data models.
+* OrderService – order creation in all main scenarios (APPROVED, REJECTED, PENDING).
+
+```bash
+mvn test
+```
+
+![Token](documents/images/mvn-test.png)
+
+
+## 11. Improvements
+
+* Docker Compose: One command to start SQL Server, WireMock, Mailpit, and the app.
+* Release pipeline: GitHub Actions for CI (build + test + coverage gate) and CD.
 
